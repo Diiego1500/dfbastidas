@@ -11,6 +11,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+
+    const ROLE_ADMIN = ['ROLE_ADMIN'];
+    const ROLE_USER = ['ROLE_USER'];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -33,6 +37,18 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * User constructor.
+     * @param $email
+     * @param array $roles
+     */
+    public function __construct($email, array $roles)
+    {
+        $this->email = $email;
+        $this->roles = $roles;
+    }
+
 
     public function getId(): ?int
     {
