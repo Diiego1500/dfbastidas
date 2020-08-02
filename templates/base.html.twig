@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}
-            <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-            <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-            <script src="{{ asset('assets/js/sweetalert2.js') }}"></script>
-        {% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+    {% if is_granted('ROLE_ADMIN') %}
+        {% include 'navbars/admin.html.twig' %}
+    {% else %}
+        {% include 'navbars/user.html.twig' %}
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/sweetalert2.js') }}"></script>
+{% endblock %}
+</body>
 </html>

@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {{ parent() }}
+    <div class="container my-2">
+        {{ form(form_season) }}
+        <hr>
+        <div class="row d-flex justify-content-center text-center">
+            {% for season in seasons %}
+                <div class="col-md-4">
+                    <div class="border bg-white p-2">
+                        <div>
+                            <img class="w-100" src="{{ asset('uploads/seasons/'~season.imagename) }}" alt="{{ season.seasonname }}">
+                        </div>
+                        <hr>
+                        <h6>{{ season.seasonname }}</h6>
+                        <p>{{ season.date | localizeddate('long', 'none', 'es_CO') }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
