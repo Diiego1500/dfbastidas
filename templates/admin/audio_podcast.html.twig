@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {{ parent() }}
+    <div class="container my-2">
+        {{ form(form_audio) }}
+        <hr>
+        {% for audio in audios %}
+            <div>
+                <audio src="{{ asset('uploads/audios/'~audio.file) }}" preload="none" controls></audio>
+
+            </div>
+            {{ dump(audio) }}
+        {% endfor %}
+
+    </div>
+{% endblock %}

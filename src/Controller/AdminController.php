@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Audio;
 use App\Entity\Season;
 use App\Entity\User;
+use App\Form\AudioType;
 use App\Form\SeasonType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -59,5 +61,45 @@ class AdminController extends AbstractController
             'form_season'=>$form_season->createView(),
             'seasons'=>$seasons
         ]);
+    }
+
+    /**
+     * @Route("/admin/podcast/season/{id}", name="admin_podcast_audios")
+     */
+    public function admin_podcast_audios(Request $request, SluggerInterface $slugger, Season $season){
+        $em = $this->getDoctrine()->getManager();
+        $audio = new Audio();
+        $audios = $em->getRepository(Audio::class)->findBy(['season'=>$season]);
+        $form_audio = $this->createForm(AudioType::class, $audio);
+        $form_audio->handleRequest($request);
+        if($form_audio->isSubmitted() && $form_audio->isValid()){
+            $file = $form_audio->get('file')->getData();
+            if($file){
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+                // Move the file to the directory where brochures are stored
+                try {
+                    $file->move(
+                        $this->getParameter('audios_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new \Exception('Somethings wrong with your audio');
+                }
+                $audio->setFile($newFilename);
+            }
+            $audio->setSeason($season);
+            $em->persist($audio);
+            $em->flush();
+            return $this->redirectToRoute('admin_podcast_audios', ['id'=>$season->getId()]);
+        }
+        return $this->render('admin/audio_podcast.html.twig',[
+            'form_audio'=>$form_audio->createView(),
+            'audios'=>$audios
+        ]);
+
     }
 }

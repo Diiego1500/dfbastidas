@@ -6,7 +6,7 @@
         <hr>
         <div class="row d-flex justify-content-center text-center">
             {% for season in seasons %}
-                <div class="col-md-4">
+                <div class="col-md-4" onclick="location.href='{{ path('admin_podcast_audios',{id:season.id}) }}'" style="cursor: pointer">
                     <div class="border bg-white p-2">
                         <div>
                             <img class="w-100" src="{{ asset('uploads/seasons/'~season.imagename) }}" alt="{{ season.seasonname }}">
