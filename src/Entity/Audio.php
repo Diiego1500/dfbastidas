@@ -33,9 +33,23 @@ class Audio
     private $file;
 
     /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $date;
+
+    /**
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="audios")
      */
     private $season;
+
+    /**
+     * Audio constructor.
+     */
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+    }
+
 
     public function getId(): ?int
     {
@@ -89,4 +103,22 @@ class Audio
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param mixed $date
+     */
+    public function setDate($date): void
+    {
+        $this->date = $date;
+    }
+
+
 }

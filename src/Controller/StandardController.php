@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Audio;
+use App\Entity\Season;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,5 +36,26 @@ class StandardController extends AbstractController
             }
         }
         throw new \Exception('This is not an ajax call');
+    }
+
+    /**
+     * @Route("/podcast/", name="podcast")
+     */
+    public function podcast(){
+        $em = $this->getDoctrine()->getManager();
+        $seasons = $em->getRepository(Season::class)->findAll();
+        return $this->render('standard/podcast.html.twig',
+        [
+            'seasons'=>$seasons
+        ]);
+    }
+
+    /**
+     * @Route("/podcast/season/{id}", name="podcast_audio")
+     */
+    public function podcast_audio(Season $season){
+        $em = $this->getDoctrine()->getManager();
+        $audios = $em->getRepository(Audio::class)->findBy(['season'=>$season]);
+        return $this->render('standard/audios.html.twig',['audios'=>$audios, 'season'=>$season]);
     }
 }

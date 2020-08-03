@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/podcast/style.css') }}">
+{% endblock %}
+{% block body %}
+    {{ parent() }}
+    <div class="container">
+        {% for audio in audios %}
+            <div class="poca-music-area mt-50 d-flex align-items-center flex-wrap border">
+                <div class="poca-music-thumbnail">
+                    <img src="{{ asset('uploads/seasons/'~season.imagename) }}" alt="">
+                </div>
+                <div class="poca-music-content">
+                    <span class="music-published-date">{{ audio.date | localizeddate('long', 'none', 'es_CO')   }}</span>
+                    <h2>{{ audio.name }}</h2>
+                    <div class="music-meta-data">
+                        <p>By <a href="#" class="music-author">Diego Bastidas</a> |
+                            <a href="#" class="music-catagory">{{ season.seasonname }}</a>
+                            | <a href="#" class="music-duration">{{ audio.duration }}</a></p>
+                    </div>
+                    <!-- Music Player -->
+                    <div class="poca-music-player">
+                        <audio preload="auto" controls>
+                            <source src="{{ asset('uploads/audios/'~audio.file) }}">
+                        </audio>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/podcast/poca.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/podcast/active.js') }}"></script>
+{% endblock %}
