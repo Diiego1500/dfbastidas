@@ -98,7 +98,8 @@ class AdminController extends AbstractController
         }
         return $this->render('admin/audio_podcast.html.twig',[
             'form_audio'=>$form_audio->createView(),
-            'audios'=>$audios
+            'audios'=>$audios,
+            'season'=>$season
         ]);
 
     }

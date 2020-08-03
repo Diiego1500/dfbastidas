@@ -4,8 +4,8 @@
     <div class="container my-2">
         <div class="row d-flex justify-content-center text-center">
             {% for season in seasons %}
-                <div class="col-md-4" onclick="location.href='{{ path('podcast_audio',{id:season.id}) }}'" style="cursor: pointer">
-                    <div class="border bg-white p-2">
+                <div class="col-md-4" onclick="location.href='{{ path('podcast_audio',{id:season.id}) }}'">
+                    <div class="border bg-white p-2" style="cursor: pointer">
                         <div>
                             <img class="w-100" src="{{ asset('uploads/seasons/'~season.imagename) }}" alt="{{ season.seasonname }}">
                         </div>
