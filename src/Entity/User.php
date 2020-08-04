@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -54,6 +56,16 @@ class User implements UserInterface
     private $birthdate;
 
     /**
+     * @ORM\OneToOne(targetEntity=Purchasedservices::class, mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $purchasedservices;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="user")
+     */
+    private $comments;
+
+    /**
      * User constructor.
      * @param $email
      * @param array $roles
@@ -65,6 +77,7 @@ class User implements UserInterface
         $this->name = $name;
         $this->last_name = $last_name;
         $this->birthdate = $birthdate;
+        $this->comments = new ArrayCollection();
     }
 
 
@@ -192,6 +205,54 @@ class User implements UserInterface
     public function setBirthdate($birthdate): void
     {
         $this->birthdate = $birthdate;
+    }
+
+    public function getPurchasedservices(): ?Purchasedservices
+    {
+        return $this->purchasedservices;
+    }
+
+    public function setPurchasedservices(Purchasedservices $purchasedservices): self
+    {
+        $this->purchasedservices = $purchasedservices;
+
+        // set the owning side of the relation if necessary
+        if ($purchasedservices->getUser() !== $this) {
+            $purchasedservices->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comments[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
 

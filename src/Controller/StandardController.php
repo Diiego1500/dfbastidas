@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Audio;
+use App\Entity\Comments;
+use App\Entity\Purchasedservices;
 use App\Entity\Season;
 use App\Entity\User;
+use App\Form\CommentsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +31,9 @@ class StandardController extends AbstractController
             if($user == null){
                 $user = new User($email, User::ROLE_USER, $user_name, $user_last_name, new \DateTime($user_birthdate));
                 $user->setPassword($passwordEncoder->encodePassword($user,$password));
+                $purchased_service = new Purchasedservices(false,null,$user);
                 $em->persist($user);
+                $em->persist($purchased_service);
                 $em->flush();
                 return new JsonResponse(['success'=>true]);
             }else{
@@ -41,12 +46,24 @@ class StandardController extends AbstractController
     /**
      * @Route("/podcast/", name="podcast")
      */
-    public function podcast(){
+    public function podcast(Request $request){
         $em = $this->getDoctrine()->getManager();
         $seasons = $em->getRepository(Season::class)->findAll();
+        $user = $this->getUser();
+        $comments = $em->getRepository(Comments::class)->findBy(['comment_for'=>Comments::COMMENT_FOR_PODCAST]);
+        $comment = new Comments(new \DateTime(),Comments::COMMENT_FOR_PODCAST,$user);
+        $form_comment = $this->createForm(CommentsType::class, $comment);
+        $form_comment->handleRequest($request);
+        if($form_comment->isSubmitted() && $form_comment->isValid()){
+            $em->persist($comment);
+            $em->flush();
+            return $this->redirectToRoute('podcast');
+        }
         return $this->render('standard/podcast.html.twig',
         [
-            'seasons'=>$seasons
+            'seasons'=>$seasons,
+            'form_comment'=>$form_comment->createView(),
+            'comments'=>$comments
         ]);
     }
 
@@ -55,7 +72,13 @@ class StandardController extends AbstractController
      */
     public function podcast_audio(Season $season){
         $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        $purchased_service = $user->getPurchasedservices();
         $audios = $em->getRepository(Audio::class)->findBy(['season'=>$season]);
-        return $this->render('standard/audios.html.twig',['audios'=>$audios, 'season'=>$season]);
+        return $this->render('standard/audios.html.twig',[
+            'audios'=>$audios,
+            'season'=>$season,
+            'purchasedservice'=>$purchased_service
+        ]);
     }
 }

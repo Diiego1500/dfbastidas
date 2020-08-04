@@ -21,9 +21,13 @@
                     </div>
                     <!-- Music Player -->
                     <div class="poca-music-player">
+                        {% if audio.isfree or purchasedservice.podcast %}
                         <audio preload="auto" controls>
                             <source src="{{ asset('uploads/audios/'~audio.file) }}">
                         </audio>
+                            {% else %}
+                            No tienes acceso a este contenido
+                        {% endif %}
                     </div>
                 </div>
             </div>

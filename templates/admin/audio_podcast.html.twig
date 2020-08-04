@@ -14,12 +14,20 @@
                     <img src="{{ asset('uploads/seasons/'~season.imagename) }}" alt="">
                 </div>
                 <div class="poca-music-content">
-                    <span class="music-published-date">{{ audio.date | localizeddate('long', 'none', 'es_CO')   }}</span>
+                    <span class="music-published-date">{{ audio.date | localizeddate('long', 'none', 'es_CO') }}</span>
                     <h2>{{ audio.name }}</h2>
                     <div class="music-meta-data">
                         <p>By <a href="#" class="music-author">Diego Bastidas</a> |
                             <a href="#" class="music-catagory">{{ season.seasonname }}</a>
-                            | <a href="#" class="music-duration">{{ audio.duration }}</a></p>
+                            | <a href="#" class="music-duration">{{ audio.duration }}</a>
+                            | <a href="{{ path('admin_change_free_audios',{'id':audio.id}) }}">
+                                {% if audio.isfree  %}
+                                    Hacer pago
+                                {% else %}
+                                    Hacer Gratis
+                                {% endif %}
+                            </a>
+                        </p>
                     </div>
                     <!-- Music Player -->
                     <div class="poca-music-player">

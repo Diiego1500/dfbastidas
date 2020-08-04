@@ -38,6 +38,11 @@ class Audio
     private $date;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_free = false;
+
+    /**
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="audios")
      */
     private $season;
@@ -48,6 +53,7 @@ class Audio
     public function __construct()
     {
         $this->date = new \DateTime();
+        $this->is_free = false;
     }
 
 
@@ -120,5 +126,19 @@ class Audio
         $this->date = $date;
     }
 
+    /**
+     * @return bool
+     */
+    public function isFree(): bool
+    {
+        return $this->is_free;
+    }
 
+    /**
+     * @param bool $is_free
+     */
+    public function setIsFree(bool $is_free): void
+    {
+        $this->is_free = $is_free;
+    }
 }

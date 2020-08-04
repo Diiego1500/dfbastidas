@@ -101,6 +101,20 @@ class AdminController extends AbstractController
             'audios'=>$audios,
             'season'=>$season
         ]);
+    }
 
+    /**
+     * @Route("/admin/change/free/audio/{id}", name="admin_change_free_audios")
+     */
+    public function change_free_audio(Audio $audio){
+        $em = $this->getDoctrine()->getManager();
+        $is_free = $audio->isFree();
+        if($is_free){
+            $audio->setIsFree(false);
+        }else{
+            $audio->setIsFree(true);
+        }
+        $em->flush();
+        return $this->redirectToRoute('admin_podcast_audios',['id'=>$audio->getId()]);
     }
 }
