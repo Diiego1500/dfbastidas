@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Audio;
 use App\Entity\Comments;
+use App\Entity\Post;
 use App\Entity\Purchasedservices;
 use App\Entity\Season;
 use App\Entity\User;
 use App\Form\CommentsType;
+use App\Form\PostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,5 +82,32 @@ class StandardController extends AbstractController
             'season'=>$season,
             'purchasedservice'=>$purchased_service
         ]);
+    }
+
+    /**
+     * @Route("/create/post/", name="create_post")
+     */
+    public function create_post(Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        $post = new Post($user);
+        $form_post = $this->createForm(PostType::class, $post);
+        $form_post->handleRequest($request);
+        if($form_post->isSubmitted() && $form_post->isValid()){
+            $em->persist($post);
+            $em->flush();
+            return  $this->redirectToRoute('view_post',['id'=>$post->getId()]);
+        }
+        return $this->render('standard/create_post.html.twig',[
+            'form_post'=>$form_post->createView()
+        ]);
+    }
+
+
+    /**
+     * @Route("/view/post/{id}", name="view_post")
+     */
+    public function view_post(Post $post){
+        return $this->render('standard/view_post.html.twig',['post'=>$post]);
     }
 }
