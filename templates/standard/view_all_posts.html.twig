@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {{ parent() }}
+    <div class="container">
+
+        <a class="btn btn-success my-4" href="{{ path('create_post') }}">Crear Post</a>
+
+        {% for post in pagination %}
+            <div class="border rounded my-2" onclick="location.href='{{ path('view_post',{id:post.id}) }}'" style="cursor:pointer;">
+                {{ dump(post) }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

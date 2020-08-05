@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -39,6 +41,11 @@ class Post
     private $content;
 
     /**
+     * @ORM\OneToMany(targetEntity=PostComment::class, mappedBy="post")
+     */
+    private $postComments;
+
+    /**
      * Post constructor.
      * @param $user
      */
@@ -46,6 +53,7 @@ class Post
     {
         $this->user = $user;
         $this->date = new \DateTime();
+        $this->postComments = new ArrayCollection();
     }
 
 
@@ -98,6 +106,37 @@ class Post
     public function setContent(string $content): self
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PostComment[]
+     */
+    public function getPostComments(): Collection
+    {
+        return $this->postComments;
+    }
+
+    public function addPostComment(PostComment $postComment): self
+    {
+        if (!$this->postComments->contains($postComment)) {
+            $this->postComments[] = $postComment;
+            $postComment->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostComment(PostComment $postComment): self
+    {
+        if ($this->postComments->contains($postComment)) {
+            $this->postComments->removeElement($postComment);
+            // set the owning side to null (unless already changed)
+            if ($postComment->getPost() === $this) {
+                $postComment->setPost(null);
+            }
+        }
 
         return $this;
     }

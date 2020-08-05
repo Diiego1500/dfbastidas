@@ -5,11 +5,14 @@ namespace App\Controller;
 use App\Entity\Audio;
 use App\Entity\Comments;
 use App\Entity\Post;
+use App\Entity\PostComment;
 use App\Entity\Purchasedservices;
 use App\Entity\Season;
 use App\Entity\User;
 use App\Form\CommentsType;
+use App\Form\PostCommentType;
 use App\Form\PostType;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,11 +106,42 @@ class StandardController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/view/posts/", name="view_posts")
+     */
+    public function view_all_posts(PaginatorInterface $paginator, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->getRepository(Post::class)->findAllPosts();
+        $pagination = $paginator->paginate(
+            $query, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+        return $this->render('standard/view_all_posts.html.twig',[
+            'pagination'=>$pagination
+        ]);
+    }
 
     /**
      * @Route("/view/post/{id}", name="view_post")
      */
-    public function view_post(Post $post){
-        return $this->render('standard/view_post.html.twig',['post'=>$post]);
+    public function view_post(Post $post, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $comments_for_this_post = $em->getRepository(PostComment::class)->findBy(['post'=>$post]);
+        $comment = new PostComment($post);
+        $form_comment = $this->createForm(PostCommentType::class,$comment);
+        $form_comment->handleRequest($request);
+        if($form_comment->isSubmitted() && $form_comment->isValid()){
+            $user = $this->getUser();
+            $post->setUser($user->getName().' '.$user->getLastName());
+            $em->persist($comment);
+            $em->flush();
+            return $this->redirectToRoute('view_post',['id'=>$post->getId()]);
+        }
+        return $this->render('standard/view_post.html.twig',[
+            'post'=>$post,
+            'comments' => $comments_for_this_post,
+            'form_comment'=>$form_comment->createView()
+        ]);
     }
 }

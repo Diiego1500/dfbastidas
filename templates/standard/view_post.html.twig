@@ -1,5 +1,18 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {{ parent() }}
-    {{ dump(post) }}
+    <div class="container my-2">
+        <a href="{{ path('view_posts') }}">Ver Posts</a>
+        <a href="{{ path('create_post') }}">Crear Post</a>
+        <div class="my-2">
+            {{ dump(post) }}
+        </div>
+        {% if is_granted('ROLE_USER') %}
+            {{ form(form_comment) }}
+        {% else %}
+            Registrate para comentar
+        {% endif %}
+        <hr>
+        {{ dump(comments) }}
+    </div>
 {% endblock %}
